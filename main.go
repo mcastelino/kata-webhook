@@ -36,6 +36,15 @@ func annotatePodMutator(_ context.Context, obj metav1.Object) (bool, error) {
 		break
 	}
 
+	for i := range pod.Spec.Containers {
+		if pod.Spec.Containers[i].SecurityContext != nil {
+			if *pod.Spec.Containers[i].SecurityContext.Privileged {
+				fmt.Println("Privileged container: ", pod.GetNamespace(), pod.GetName())
+				return false, nil
+			}
+		}
+	}
+
 	fmt.Println("katait: ", pod.GetNamespace(), pod.GetName())
 
 	// Mutate our object with the required annotations.
